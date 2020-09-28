@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator'); //* модуль для валидации данных
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -23,6 +24,23 @@ const userSchema = new mongoose.Schema({
       },
       message: (props) => `${props.value} невалидная ссылка!`, //* вернули сообщение, если данные не прошли валидацию
     },
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator(email) {
+        //* проверим, вводимый пользователь email, c помощью модуля validator
+        return validator.isEmail(email);
+      },
+      message: (props) => `${props.value} невалидная электронная почта!`,
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
   },
 }); //* создали схему, чтобы проверять, соответствует ли ей документ, прежде чем записывать его в БД
 

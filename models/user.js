@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator(email) {
-        //* проверим, вводимый пользователь email, c помощью модуля validator
+        //* проверим, вводимый пользователем email, c помощью модуля validator
         return validator.isEmail(email);
       },
       message: (props) => `${props.value} невалидная электронная почта!`,

@@ -49,7 +49,7 @@ function createUser(req, res) {
   } = req.body;
 
   //* хешируем пароль с помощью модуля bcrypt, 10 - это длина «соли»,
-  //* случайной строки, которую метод добавит к паролю перед хешированем для безопасности
+  //* случайной строки, которую метод добавит к паролю перед хешированием, для безопасности
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
@@ -104,10 +104,42 @@ function setUserAvatar(req, res) {
     });
 }
 
+//* если почта и пароль из запроса на авторизацию совпадают с теми, что есть в базе,
+//* пользователь входит в аккаунт, иначе - получает сообщение об ошибке
+function login(req, res) {
+  const { email, password } = req.body;
+
+  User.findOne({ email }) //* запускаем цепочку промисов
+    .then((user) => {
+      //* если пользователь не найден - отклоняем промис создав ошибку и переходим в блок catch
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      //* если пользователь найден - сравниваем переданный пароль и хеш из базы
+      return bcrypt.compare(password, user.password);
+    })
+
+    .then((matched) => {
+      if (!matched) {
+        //* если хеши по результату предыдущего then не совпали - отклоняем промис
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      //* если хэши совпали аутентификация прошла успешно и этот then вернёт true и сообщение
+      res.send({ message: 'Всё верно!' });
+    })
+
+    .catch((error) => {
+      res.status(401).send({ message: error.message });
+    });
+}
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   setUserInfo,
   setUserAvatar,
+  login,
 };

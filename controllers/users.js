@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs'); //* модуль для хэширования пароля пользователя
 const User = require('../models/user');
 const { handleValidationError } = require('../errors/validationError');
 const { handleNotFoundError, nullReturnedError } = require('../errors/notFoundError');
@@ -47,13 +48,17 @@ function createUser(req, res) {
     password,
   } = req.body;
 
-  User.create({
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  })
+  //* хешируем пароль с помощью модуля bcrypt, 10 - это длина «соли»,
+  //* случайной строки, которую метод добавит к паролю перед хешированем для безопасности
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash, //* записали хеш в базу
+    }))
+
     .then((data) => {
       res.send(data); //* вернули документ из базы с записанными в него данными запроса
     })

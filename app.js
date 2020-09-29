@@ -29,8 +29,8 @@ app.use(bodyParser.json()); //* указали парсить запросы с 
 app.use(bodyParser.urlencoded({ extended: true })); //* указали парсить запросы с веб-страницами
 
 //* роуты, не требующие авторизации
-app.post('/signin', login); //* обработчик POST-запроса на роут '/signin'
-app.post('/signup', createUser);
+app.post('/signup', createUser); //* обработчик POST-запроса на роут '/signup'
+app.post('/signin', login);
 
 app.use(auth); //* применили авторизационный мидлвэр
 

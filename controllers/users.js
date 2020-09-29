@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs'); //* модуль для хэширования пароля пользователя
+const jwt = require('jsonwebtoken'); //* модуль для создания jwt-токенов
 const User = require('../models/user');
 const { handleValidationError } = require('../errors/validationError');
 const { handleNotFoundError, nullReturnedError } = require('../errors/notFoundError');
@@ -109,25 +110,13 @@ function setUserAvatar(req, res) {
 function login(req, res) {
   const { email, password } = req.body;
 
-  User.findOne({ email }) //* запускаем цепочку промисов
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      //* если пользователь не найден - отклоняем промис создав ошибку и переходим в блок catch
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
+      //* создадим jwt-токен
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
 
-      //* если пользователь найден - сравниваем переданный пароль и хеш из базы
-      return bcrypt.compare(password, user.password);
-    })
-
-    .then((matched) => {
-      if (!matched) {
-        //* если хеши по результату предыдущего then не совпали - отклоняем промис
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-
-      //* если хэши совпали аутентификация прошла успешно и этот then вернёт true и сообщение
-      res.send({ message: 'Всё верно!' });
+      //* вернём токен пользователю
+      res.send({ token });
     })
 
     .catch((error) => {

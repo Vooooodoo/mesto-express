@@ -4,6 +4,8 @@ const bodyParser = require('body-parser'); //* модуль для парсин�
 const rateLimit = require('express-rate-limit'); //* модуль для ограничения количества запросов
 const cardsRouter = require('./routes/cards'); //* импортировали роутер
 const usersRouter = require('./routes/users');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env; //* слушаем 3000 порт
 
@@ -26,14 +28,13 @@ app.use(limiter); //* применили ко всем запросам защи
 app.use(bodyParser.json()); //* указали парсить запросы с JSON
 app.use(bodyParser.urlencoded({ extended: true })); //* указали парсить запросы с веб-страницами
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5f4bb8738cdd982d9c7076a0',
-  };
+//* роуты, не требующие авторизации
+app.post('/signin', login); //* обработчик POST-запроса на роут '/signin'
+app.post('/signup', createUser);
 
-  next();
-}); //* временное решение авторизации
+app.use(auth); //* применили авторизационный мидлвэр
 
+//* роуты, которым авторизация нужна
 app.use('/cards', cardsRouter); //* запустили роутер
 app.use('/users', usersRouter);
 

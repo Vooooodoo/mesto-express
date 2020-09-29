@@ -112,11 +112,9 @@ function login(req, res) {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      //* создадим jwt-токен
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' }); //* создали jwt-токен сроком на неделю
 
-      //* вернём токен пользователю
-      res.send({ token });
+      res.send({ token }); //* отправили токен пользователю
     })
 
     .catch((error) => {

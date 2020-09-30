@@ -63,7 +63,13 @@ function createUser(req, res) {
     }))
 
     .then((data) => {
-      res.send(data); //* вернули документ из базы с записанными в него данными пользователя
+      res.send({
+        _id: data._id,
+        name: data.name,
+        about: data.about,
+        avatar: data.avatar,
+        email: data.email,
+      }); //* вернули документ из базы с записанными в него данными пользователя
     })
 
     .catch((error) => {

@@ -5,6 +5,8 @@ const { handleValidationError } = require('../errors/validationError');
 const { handleNotFoundError, nullReturnedError } = require('../errors/notFoundError');
 const { handleDefaultError } = require('../errors/defaultError');
 
+const { NODE_ENV, JWT_SECRET } = process.env; //* доступ к секретному jwt-ключу из .env файла
+
 const notFoundErrorMessage = 'Нет пользователя с таким id';
 
 function handleErrors(res, error) {
@@ -112,7 +114,11 @@ function login(req, res) {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' }); //* создали jwt-токен сроком на неделю
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      ); //* создали jwt-токен сроком на неделю
 
       res.send({ token }); //* отправили токен пользователю
     })

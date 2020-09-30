@@ -1,3 +1,4 @@
+require('dotenv').config(); //* модуль безопасности, для использования секретного jwt-ключа из .env файла
 const express = require('express');
 const mongoose = require('mongoose'); //* модуль для взаимодействия MongoDB и JS
 const bodyParser = require('body-parser'); //* модуль для парсинга req.body

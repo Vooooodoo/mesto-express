@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 //* модуль для повторной авторизации пользователя по jwt-токену из запроса
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
@@ -16,7 +18,7 @@ module.exports = (req, res, next) => {
   try {
     //* убедимся что пользователь прислал именно тот токен, который был выдан ему ранее
     //* вторым аргументом передадим секретный ключ, которым токен был подписан
-    payload = jwt.verify(token, 'some-secret-key');
+    payload = jwt.verify(token, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`);
   } catch (error) {
     return res.status(401).send({ message: 'Необходима авторизация' });
   }

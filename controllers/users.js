@@ -51,7 +51,7 @@ function createUser(req, res) {
 
   //* хешируем пароль с помощью модуля bcrypt, 10 - это длина «соли»,
   //* случайной строки, которую метод добавит к паролю перед хешированием, для безопасности
-  bcrypt.hash(password, 10) //! пропускает короткий пароль из за хэша!!!
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
       about,

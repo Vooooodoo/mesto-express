@@ -42,13 +42,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+    select: false, //* сделали чтобы хеш пароля пользователя не возвращался из базы
   },
 }); //* создали схему, чтобы проверять, соответствует ли ей документ, прежде чем записывать его в БД
 
 //* добавим метод findUserByCredentials схеме пользователя
 userSchema.statics.findUserByCredentials = function (email, password) {
   //* попытаемся найти пользователя по почте
-  return this.findOne({ email }) //* this — это модель User
+  return this.findOne({ email }).select('+password') //* this — это модель User
     .then((user) => {
       //* если не нашёлся — отклоняем промис создав ошибку
       if (!user) {

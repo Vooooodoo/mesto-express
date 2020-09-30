@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
   //* если jwt-токена нет в заголовке запроса - отправить ошибку
   if (!authorization && !authorization.startsWith('Bearer ')) {
     return res.status(401).send({ message: 'Необходима авторизация' });
-  }
+  } //! как нить проверить авторизацию, сейчас выдаёт ошибку из за отсутствия фронта
 
   //* если токен в наличии - извлечём только его, выкинув из заголовка приставку 'Bearer '
   const token = authorization.replace('Bearer ', '');

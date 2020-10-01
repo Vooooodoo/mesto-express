@@ -1,7 +1,6 @@
 const Card = require('../models/card');
-const { handleValidationError } = require('../errors/validationError');
-const { handleNotFoundError, nullReturnedError } = require('../errors/notFoundError');
-const { handleDefaultError } = require('../errors/defaultError');
+const ValidationError = require('../errors/ValidationError');
+const NotFoundError  = require('../errors/NotFoundError');
 
 const notFoundErrorMessage = 'Нет карточки с таким id';
 

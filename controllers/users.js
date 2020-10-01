@@ -1,48 +1,46 @@
 const bcrypt = require('bcryptjs'); //* модуль для хэширования пароля пользователя
 const jwt = require('jsonwebtoken'); //* модуль для создания jwt-токенов
 const User = require('../models/user');
-const { handleValidationError } = require('../errors/validationError');
-const { handleNotFoundError, nullReturnedError } = require('../errors/notFoundError');
-const { handleDefaultError } = require('../errors/defaultError');
+const ValidationError = require('../errors/ValidationError');
+const NotFoundError = require('../errors/NotFoundError');
 
 const { NODE_ENV, JWT_SECRET } = process.env; //* доступ к секретному jwt-ключу из .env файла
 
-const notFoundErrorMessage = 'Нет пользователя с таким id';
-
-function handleErrors(res, error) {
-  if (error === nullReturnedError || error.name === 'CastError') {
-    handleNotFoundError(res, error, notFoundErrorMessage);
+function handleErrors(error) {
+  if (error.name === 'NullReturned' || error.name === 'CastError') {
+    throw new NotFoundError(error.message);
   } else {
-    handleValidationError(res, error);
+    throw new ValidationError(error.message);
   }
 }
 
-function getUsers(req, res) {
+function getUsers(req, res, next) {
   User.find({})
     .then((data) => {
       res.send(data);
     })
 
-    .catch((error) => {
-      handleDefaultError(res, error);
-    });
+    .catch(next);
 }
 
-function getUser(req, res) {
+function getUser(req, res, next) {
   User.findById(req.params.id) //* req.params.id = id после слэша в роуте
-    //* если id в целом валидный, но такого пользователя нет в базе - перейти в блок .catch
-    .orFail(nullReturnedError)
+    //* если id в целом валидный, но такого пользователя нет в базе вернётся null
+    //* обработаем эту ошибку перейдя в блок .catch
+    .orFail(new NotFoundError('NullReturned'))
 
     .then((data) => {
       res.send(data); //* если пользователь с req.params.id есть в базе, отправить его данные
     })
 
     .catch((error) => {
-      handleNotFoundError(res, error, notFoundErrorMessage);
-    });
+      throw new NotFoundError(error.message);
+    })
+
+    .catch(next);
 }
 
-function createUser(req, res) {
+function createUser(req, res, next) {
   const {
     name,
     about,
@@ -73,44 +71,50 @@ function createUser(req, res) {
     })
 
     .catch((error) => {
-      handleValidationError(res, error);
-    });
+      throw new ValidationError(error.message);
+    })
+
+    .catch(next);
 }
 
-function setUserInfo(req, res) {
+function setUserInfo(req, res, next) {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, //* теперь обработчик then получит на вход уже обновлённую запись
     runValidators: true, //* включили валидацию данных перед изменением
   })
-    .orFail(nullReturnedError)
+    .orFail(new NotFoundError('NullReturned'))
 
     .then((data) => {
       res.send(data);
     })
 
     .catch((error) => {
-      handleErrors(res, error);
-    });
+      handleErrors(error);
+    })
+
+    .catch(next);
 }
 
-function setUserAvatar(req, res) {
+function setUserAvatar(req, res, next) {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
   })
-    .orFail(nullReturnedError)
+    .orFail(new NotFoundError('NullReturned'))
 
     .then((data) => {
       res.send(data);
     })
 
     .catch((error) => {
-      handleErrors(res, error);
-    });
+      handleErrors(error);
+    })
+
+    .catch(next);
 }
 
 //* если почта и пароль из запроса на авторизацию совпадают с теми, что есть в базе,

@@ -4,18 +4,16 @@ const NotFoundError  = require('../errors/NotFoundError');
 
 const notFoundErrorMessage = 'Нет карточки с таким id';
 
-function getCards(req, res) {
+function getCards(req, res, next) {
   Card.find({})
     .then((data) => {
       res.send(data);
     })
 
-    .catch((error) => {
-      handleDefaultError(res, error);
-    });
+    .catch(next);
 }
 
-function createCard(req, res) {
+function createCard(req, res, next) {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
@@ -24,8 +22,10 @@ function createCard(req, res) {
     })
 
     .catch((error) => {
-      handleValidationError(res, error);
-    });
+      throw new ValidationError(error.message);
+    })
+
+    .catch(next);
 }
 
 function removeCard(req, res) {

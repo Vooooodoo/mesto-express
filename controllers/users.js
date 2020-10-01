@@ -27,8 +27,8 @@ function getUsers(req, res, next) {
 function getUser(req, res, next) {
   User.findById(req.params.id) //* req.params.id = id после слэша в роуте
     //* если id в целом валидный, но такого пользователя нет в базе - вернётся null
-    //* обработаем эту ошибку, перейдя в блок .catch
-    .orFail(new NotFoundError('NullReturned'))
+    //* создадим новую ошибку и перейдём в ближайший блок .catch для обработки
+    .orFail(new Error('NullReturned'))
 
     .then((data) => {
       res.send(data); //* если пользователь с req.params.id есть в базе, отправить его данные
@@ -85,7 +85,7 @@ function setUserInfo(req, res, next) {
     new: true, //* теперь обработчик then получит на вход уже обновлённую запись
     runValidators: true, //* включили валидацию данных перед изменением
   })
-    .orFail(new NotFoundError('NullReturned'))
+    .orFail(new Error('NullReturned'))
 
     .then((data) => {
       res.send(data);
@@ -105,7 +105,7 @@ function setUserAvatar(req, res, next) {
     new: true,
     runValidators: true,
   })
-    .orFail(new NotFoundError('NullReturned'))
+    .orFail(new Error('NullReturned'))
 
     .then((data) => {
       res.send(data);

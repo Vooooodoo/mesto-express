@@ -7,7 +7,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const { NODE_ENV, JWT_SECRET } = process.env; //* доступ к секретному jwt-ключу из .env файла
 
 function handleErrors(error) {
-  if (error.name === 'NullReturned' || error.name === 'CastError') {
+  if (error.message === 'NullReturned' || error.name === 'CastError') {
     throw new NotFoundError(error.message);
   } else {
     throw new ValidationError(error.message);
@@ -25,8 +25,8 @@ function getUsers(req, res, next) {
 
 function getUser(req, res, next) {
   User.findById(req.params.id) //* req.params.id = id после слэша в роуте
-    //* если id в целом валидный, но такого пользователя нет в базе вернётся null
-    //* обработаем эту ошибку перейдя в блок .catch
+    //* если id в целом валидный, но такого пользователя нет в базе - вернётся null
+    //* обработаем эту ошибку, перейдя в блок .catch
     .orFail(new NotFoundError('NullReturned'))
 
     .then((data) => {
@@ -34,7 +34,7 @@ function getUser(req, res, next) {
     })
 
     .catch((error) => {
-      throw new NotFoundError(error.message);
+      throw new NotFoundError({ message: `Пользователя нет в базе: ${error.message}` });
     })
 
     .catch(next);

@@ -8,6 +8,7 @@ const usersRouter = require('./routes/users');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
+const { validateNewUser, validateLogin } = require('./middlewares/reqValidation');
 
 const { PORT = 3000 } = process.env; //* слушаем 3000 порт
 
@@ -31,8 +32,8 @@ app.use(bodyParser.json()); //* указали парсить запросы с 
 app.use(bodyParser.urlencoded({ extended: true })); //* указали парсить запросы с веб-страницами
 
 //* роуты, не требующие авторизации
-app.post('/signup', createUser); //* обработчик POST-запроса на роут '/signup'
-app.post('/signin', login);
+app.post('/signup', validateNewUser, createUser); //* обработчик POST-запроса на роут '/signup'
+app.post('/signin', validateLogin, login);
 
 //! app.use(auth); //* применили авторизационный мидлвэр
 

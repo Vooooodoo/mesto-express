@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    minlength: 2,
     required: true,
     validate: { //* свойство для более тонкой проверки данных
       validator(link) { //* функция валидации вернёт true, если данные соответствуют регулярке

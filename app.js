@@ -7,6 +7,7 @@ const cardsRouter = require('./routes/cards'); //* импортировали р
 const usersRouter = require('./routes/users');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env; //* слушаем 3000 порт
 
@@ -40,7 +41,7 @@ app.use('/cards', cardsRouter); //* запустили роутер
 app.use('/users', usersRouter);
 
 app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
 }); //* обработали несуществующий адрес
 
 //* централизованная обработка ошибок
@@ -53,7 +54,7 @@ app.use((error, req, res, next) => {
     .send({
       //* проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
-        ? 'На сервере произошла ошибка!!!' //! убрать восклицания потом
+        ? 'На сервере произошла ошибка'
         : message,
     });
 

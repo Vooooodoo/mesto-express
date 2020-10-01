@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose'); //* модуль для взаимодействия MongoDB и JS
 const bodyParser = require('body-parser'); //* модуль для парсинга req.body
 const rateLimit = require('express-rate-limit'); //* модуль для ограничения количества запросов
+const { errors } = require('celebrate'); //* модуль для обработки ошибок первичной валидации запроса
 const cardsRouter = require('./routes/cards'); //* импортировали роутер
 const usersRouter = require('./routes/users');
 const { createUser, login } = require('./controllers/users');
@@ -44,6 +45,8 @@ app.use('/users', usersRouter);
 app.use('*', (req, res) => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 }); //* обработали несуществующий адрес
+
+app.use(errors()); //* обработчик ошибок celebrate
 
 //* централизованная обработка ошибок
 app.use((error, req, res, next) => {

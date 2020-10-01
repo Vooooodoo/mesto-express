@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken'); //* модуль для создания jw
 const User = require('../models/user');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const AuthError = require('../errors/AuthError');
 
 const { NODE_ENV, JWT_SECRET } = process.env; //* доступ к секретному jwt-ключу из .env файла
 
@@ -34,7 +35,7 @@ function getUser(req, res, next) {
     })
 
     .catch((error) => {
-      throw new NotFoundError({ message: `Пользователя нет в базе: ${error.message}` });
+      throw new NotFoundError(error.message);
     })
 
     .catch(next);
@@ -119,7 +120,7 @@ function setUserAvatar(req, res, next) {
 
 //* если почта и пароль из запроса на авторизацию совпадают с теми, что есть в базе,
 //* пользователь входит в аккаунт, иначе - получает сообщение об ошибке
-function login(req, res) {
+function login(req, res, next) {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -134,8 +135,10 @@ function login(req, res) {
     })
 
     .catch((error) => {
-      res.status(401).send({ message: error.message });
-    });
+      throw new AuthError(error.message);
+    })
+
+    .catch(next);
 }
 
 module.exports = {

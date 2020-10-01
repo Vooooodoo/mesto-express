@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const AuthError = require('../errors/AuthError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -8,7 +9,7 @@ module.exports = (req, res, next) => {
 
   //* если jwt-токена нет в заголовке запроса - отправить ошибку
   if (!authorization && !authorization.startsWith('Bearer ')) {
-    return res.status(401).send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходима авторизация');
   } //! как нить проверить авторизацию, сейчас выдаёт ошибку из за отсутствия фронта
 
   //* если токен в наличии - извлечём только его, выкинув из заголовка приставку 'Bearer '
@@ -20,7 +21,7 @@ module.exports = (req, res, next) => {
     //* вторым аргументом передадим секретный ключ, которым токен был подписан
     payload = jwt.verify(token, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`);
   } catch (error) {
-    return res.status(401).send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходима авторизация');
   }
 
   req.user = payload; //* записали пейлоуд в объект запроса

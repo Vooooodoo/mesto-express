@@ -1,14 +1,14 @@
 const { celebrate, Joi } = require('celebrate'); //* модуль для валидации данных от пользователя до запуска контроллера
 
 const validateId = celebrate({
-  params: Joi.object().keys({
+  params: Joi.object().keys({ //* валидируем параметры
     //* id должен быть строкой, состоящей из a-z, A-Z, 0-9, длиной в 24 символа
     _id: Joi.string().alphanum().length(24),
   }),
 });
 
 const validateUserInfo = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object().keys({ //* валидируем тело запроса
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(20),
   }),

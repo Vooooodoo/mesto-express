@@ -1,8 +1,6 @@
 const Card = require('../models/card');
 const ValidationError = require('../errors/ValidationError');
-const NotFoundError  = require('../errors/NotFoundError');
-
-const notFoundErrorMessage = 'Нет карточки с таким id';
+const NotFoundError = require('../errors/NotFoundError');
 
 function getCards(req, res, next) {
   Card.find({})
@@ -28,51 +26,57 @@ function createCard(req, res, next) {
     .catch(next);
 }
 
-function removeCard(req, res) {
+function removeCard(req, res, next) {
   Card.findByIdAndDelete(req.params.id)
-    .orFail(nullReturnedError)
+    .orFail(new Error('NullReturned'))
 
     .then((data) => {
       res.send(data);
     })
 
     .catch((error) => {
-      handleNotFoundError(res, error, notFoundErrorMessage);
-    });
+      throw new NotFoundError(error.message);
+    })
+
+    .catch(next);
 }
 
-function likeCard(req, res) {
+function likeCard(req, res, next) {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } }, //* добавили _id в массив, если его там нет
     { new: true },
   )
-    .orFail(nullReturnedError)
+    .orFail(new Error('NullReturned'))
 
     .then((data) => {
       res.send(data);
     })
 
     .catch((error) => {
-      handleNotFoundError(res, error, notFoundErrorMessage);
-    });
+      throw new NotFoundError(error.message);
+    })
+
+    .catch(next);
 }
 
-function dislikeCard(req, res) {
+function dislikeCard(req, res, next) {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } }, //* убрали _id из массива
     { new: true },
   )
-    .orFail(nullReturnedError)
+    .orFail(new Error('NullReturned'))
 
     .then((data) => {
       res.send(data);
     })
 
     .catch((error) => {
-      handleNotFoundError(res, error, notFoundErrorMessage);
-    });
+      throw new NotFoundError(error.message);
+    })
+
+    .catch(next);
 }
 
 module.exports = {

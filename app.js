@@ -10,6 +10,7 @@ const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const { validateNewUser, validateLogin } = require('./middlewares/reqValidation');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env; //* слушаем 3000 порт
 
@@ -32,6 +33,8 @@ app.use(limiter); //* применили ко всем запросам защи
 app.use(bodyParser.json()); //* указали парсить запросы с JSON
 app.use(bodyParser.urlencoded({ extended: true })); //* указали парсить запросы с веб-страницами
 
+app.use(requestLogger); //* подключили логгер запросов до всех обработчиков роутов
+
 //* роуты, не требующие авторизации
 app.post('/signup', validateNewUser, createUser); //* обработчик POST-запроса на роут '/signup'
 app.post('/signin', validateLogin, login);
@@ -45,6 +48,9 @@ app.use('/users', usersRouter);
 app.use('*', (req, res) => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 }); //* обработали несуществующий адрес
+
+//* подключим логгер ошибок, после обработчиков роутов и до обработчиков ошибок
+app.use(errorLogger);
 
 app.use(errors()); //* обработчик ошибок celebrate
 

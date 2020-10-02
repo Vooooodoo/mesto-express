@@ -34,11 +34,11 @@ function removeCard(req, res, next) {
     .orFail(new Error('NullReturned'))
 
     .then((card) => {
-      if (card.owner !== currentUser) {
+      if (card.owner.toString() !== currentUser) {
         throw new ForbiddenError('Недостаточно прав для выполнения операции');
       }
 
-      Card.findByIdAndDelete(req.params._id)
+      Card.findByIdAndDelete(req.params.id)
         .then((data) => {
           res.send(data);
         })

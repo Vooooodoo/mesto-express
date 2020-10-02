@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 function getCards(req, res, next) {
   Card.find({})
@@ -27,11 +28,17 @@ function createCard(req, res, next) {
 }
 
 function removeCard(req, res, next) {
+  const currentUser = req.user._id;
+
   Card.findByIdAndDelete(req.params.id)
     .orFail(new Error('NullReturned'))
 
-    .then((data) => {
-      res.send(data);
+    .then((card) => {
+      // if (card.owner !== currentUser) {
+      //   throw new ForbiddenError('Недостаточно прав для выполнения операции');
+      // }
+
+      res.send(card);
     })
 
     .catch((error) => {

@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate'); //* модуль для вал�
 const validateId = celebrate({
   params: Joi.object().keys({ //* валидируем параметры
     //* id должен быть строкой, состоящей из a-z, A-Z, 0-9, длиной в 24 символа
-    _id: Joi.string().alphanum().length(24),
+    id: Joi.string().alphanum().length(24),
   }),
 });
 

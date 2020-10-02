@@ -30,7 +30,7 @@ function createCard(req, res, next) {
 function removeCard(req, res, next) {
   const currentUser = req.user._id;
 
-  Card.findByIdAndDelete(req.params.id)
+  Card.findById(req.params.id)
     .orFail(new Error('NullReturned'))
 
     .then((card) => {
@@ -38,7 +38,12 @@ function removeCard(req, res, next) {
         throw new ForbiddenError('Недостаточно прав для выполнения операции');
       }
 
-      res.send(card);
+      Card.findByIdAndDelete(req.params._id)
+        .then((data) => {
+          res.send(data);
+        })
+
+        .catch(next);
     })
 
     .catch((error) => {

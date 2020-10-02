@@ -34,9 +34,9 @@ function removeCard(req, res, next) {
     .orFail(new Error('NullReturned'))
 
     .then((card) => {
-      // if (card.owner !== currentUser) {
-      //   throw new ForbiddenError('Недостаточно прав для выполнения операции');
-      // }
+      if (card.owner !== currentUser) {
+        throw new ForbiddenError('Недостаточно прав для выполнения операции');
+      }
 
       res.send(card);
     })

@@ -8,9 +8,9 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   //* если jwt-токена нет в заголовке запроса - отправить ошибку
-  if (!authorization && !authorization.startsWith('Bearer ')) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new AuthError('Необходима авторизация');
-  } //! выдаёт ошибку авторизации из за отсутствия фронта, узнать как зачинить
+  }
 
   //* если токен в наличии - извлечём только его, выкинув из заголовка приставку 'Bearer '
   const token = authorization.replace('Bearer ', '');

@@ -14,4 +14,5 @@
 `130.193.37.161`
 
 ## Доменное имя
-`voodoo.students.nomoreparties.co`
+`voodoo.students.nomoreparties.co` — фронтенд
+`api.voodoo.students.nomoreparties.co` — бэкенд

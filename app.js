@@ -46,7 +46,7 @@ app.get('/crash-test', () => {
 app.post('/signup', validateNewUser, createUser); //* обработчик POST-запроса на роут '/signup'
 app.post('/signin', validateLogin, login);
 
-// app.use(auth); //* применили авторизационный мидлвэр
+app.use(auth); //* применили авторизационный мидлвэр
 
 //* роуты, которым авторизация нужна
 app.use('/cards', cardsRouter); //* запустили роутер

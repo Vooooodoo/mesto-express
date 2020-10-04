@@ -4,6 +4,7 @@ const User = require('../models/user');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 const AuthError = require('../errors/AuthError');
+const ConflictError = require('../errors/ConflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env; //* доступ к секретному jwt-ключу из .env файла
 
@@ -72,6 +73,10 @@ function createUser(req, res, next) {
     })
 
     .catch((error) => {
+      if (error.name === 'MongoError' || error.code === 11000) {
+        throw new ConflictError(error.message);
+      }
+
       throw new ValidationError(error.message);
     })
 

@@ -4,6 +4,7 @@ const mongoose = require('mongoose'); //* модуль для взаимодей
 const bodyParser = require('body-parser'); //* модуль для парсинга req.body
 const rateLimit = require('express-rate-limit'); //* модуль для ограничения количества запросов
 const { errors } = require('celebrate'); //* модуль для обработки ошибок первичной валидации запроса
+const helmet = require('helmet'); //* модуль для защиты от популярных уязвимостей в интернете
 const cardsRouter = require('./routes/cards'); //* импортировали роутер
 const usersRouter = require('./routes/users');
 const { createUser, login } = require('./controllers/users');
@@ -29,6 +30,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 }); //* подключились к серверу MongoDB
 
+app.use(helmet());
 app.use(limiter); //* применили ко всем запросам защиту от DoS-атак
 app.use(bodyParser.json()); //* указали парсить запросы с JSON
 app.use(bodyParser.urlencoded({ extended: true })); //* указали парсить запросы с веб-страницами
